@@ -1,0 +1,26 @@
+version: "3.5"
+services:
+  web:
+    image: vihnpalm/projects:hello
+    networks:
+      - traefik-public
+    build: .
+    ports:
+      - "7000:7000"
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.hello.rule=Host(`hello.localhost`)"
+        - "traefik.http.routers.hello.entrypoints=websecure"
+        - "traefik.http.routers.hello.tls.certresolver=letsencryptresolver"
+        - "traefik.http.services.hello.loadbalancer.server.port=7000"
+  redis:
+    image: redis:alpine
+    networks:
+      - traefik-public
+    deploy:
+      labels:
+        - "traefik.enable=true"
+networks:
+  traefik-public:
+    external: true
